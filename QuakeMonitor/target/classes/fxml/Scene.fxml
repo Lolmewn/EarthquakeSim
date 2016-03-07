@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.lynden.gmapsfx.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="300.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="nl.lolmewn.rug.quakemonitor.FXMLController">
+    <children>
+      <TabPane prefHeight="303.0" prefWidth="500.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Quake map">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <com.lynden.gmapsfx.GoogleMapView fx:id="mapView" prefHeight="274.0" prefWidth="362.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="0.0">
+                        </com.lynden.gmapsfx.GoogleMapView>
+                        <Label layoutX="350.0" layoutY="43.0" text="Longitude" />
+                        <Label layoutX="350.0" layoutY="26.0" text="Latitude" />
+                        <Label fx:id="latCoord" layoutX="415.0" layoutY="26.0" prefHeight="17.0" prefWidth="90.0" text="0.0" />
+                        <Label fx:id="longCoord" layoutX="415.0" layoutY="43.0" prefHeight="17.0" prefWidth="90.0" text="0.0" />
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+          <Tab text="Untitled Tab 2">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+    </children>
+</AnchorPane>
