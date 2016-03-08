@@ -3,6 +3,7 @@ package nl.lolmewn.rug.quakesensor;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakesensor.net.ServerManager;
 
 /**
@@ -30,7 +31,7 @@ public class Sensor {
 
     private void loadSettings() {
         try {
-            this.settings = new Settings();
+            this.settings = new Settings("settings.properties");
         } catch (IOException ex) {
             Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Failed to generate config, cannot start.");

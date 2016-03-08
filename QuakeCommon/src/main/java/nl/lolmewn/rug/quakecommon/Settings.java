@@ -1,4 +1,4 @@
-package nl.lolmewn.rug.quakesensor;
+package nl.lolmewn.rug.quakecommon;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -18,16 +18,17 @@ import nl.lolmewn.rug.quakecommon.net.ServerAddress;
  */
 public class Settings {
 
-    private static final String RELATIVE_PATH = "settings.properties";
+    private final String fileName;
     private final Properties properties;
 
-    public Settings() throws IOException {
+    public Settings(String fileName) throws IOException {
+        this.fileName = fileName;
         properties = new Properties();
         load();
     }
 
     private void load() throws IOException {
-        File file = new File(RELATIVE_PATH);
+        File file = new File(fileName);
         if (!file.exists()) {
             exportSettings();
             // no exception occured, file should exist now.
@@ -36,11 +37,11 @@ public class Settings {
     }
 
     private void exportSettings() throws IOException {
-        File file = new File(RELATIVE_PATH);
+        File file = new File(fileName);
         file.createNewFile();
         // Init all streams to auto-close on exit of try
-        try (PrintWriter out = new PrintWriter(file); 
-                InputStream in = this.getClass().getResourceAsStream("/config.properties"); 
+        try (PrintWriter out = new PrintWriter(file);
+                InputStream in = this.getClass().getResourceAsStream("/" + fileName);
                 BufferedReader br = new BufferedReader(new InputStreamReader(in))) {
             String line;
             while ((line = br.readLine()) != null) {
@@ -49,23 +50,23 @@ public class Settings {
             out.flush();
         }
     }
-    
-    public List<ServerAddress> getServers(){
+
+    public List<ServerAddress> getServers() {
         List<ServerAddress> servers = new ArrayList<>();
         // servers is defined as address,port;address,port... etc
         String stringOfServers = properties.getProperty("servers");
         String[] arrayOfServers = stringOfServers.split(";");
-        for(String serverDesc : arrayOfServers){
+        for (String serverDesc : arrayOfServers) {
             String[] serverInfo = serverDesc.split(",");
-            if(serverInfo.length != 2){
+            if (serverInfo.length != 2) {
                 System.err.println("Server data not in line with definition, ignoring (" + serverDesc + ")...");
                 continue;
             }
             String address = serverInfo[0];
-            try{
+            try {
                 int port = Integer.parseInt(serverInfo[1]);
                 servers.add(new ServerAddress(address, port));
-            }catch(NumberFormatException ignored){
+            } catch (NumberFormatException ignored) {
                 // port is not a number, report
                 System.err.println("Port was not a number for server " + address + ", please check your config.");
                 System.err.println("Ignoring server...");

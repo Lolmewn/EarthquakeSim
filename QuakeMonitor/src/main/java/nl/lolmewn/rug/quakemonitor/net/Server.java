@@ -76,4 +76,8 @@ public class Server implements Runnable {
     private void sendServers() {
     }
 
+    public int getPort() {
+        return this.port;
+    }
+
 }
