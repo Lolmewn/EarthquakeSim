@@ -48,6 +48,7 @@ public class ServerSyncer implements Runnable {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 String json = reader.readLine();
                 ResponseServersPacket packet = (ResponseServersPacket) DataPacket.receive(json);
+                System.out.println("Received " + packet.getClass().getName());
             } catch (IOException ex) {
                 Logger.getLogger(ServerSyncer.class.getName()).log(Level.SEVERE, null, ex);
             }
