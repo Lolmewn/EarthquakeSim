@@ -12,7 +12,7 @@ public class Status {
 
     public Status(Server server) {
         this.server = server;
-        get("/status", (req, res)-> "");
+        get("/status", (req, res)-> server.getPort());
     }
 
 }
