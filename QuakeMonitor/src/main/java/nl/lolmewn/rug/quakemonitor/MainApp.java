@@ -7,10 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import nl.lolmewn.rug.quakemonitor.net.Server;
+import nl.lolmewn.rug.quakemonitor.rest.RestServer;
 
 public class MainApp extends Application {
 
     private Server server;
+    private RestServer rest;
     
     @Override
     public void start(Stage stage) throws Exception {
@@ -29,6 +31,8 @@ public class MainApp extends Application {
         System.out.println("GUI launched, launching server...");
         this.server = new Server(5000);
         this.server.start();
+        
+        this.rest = new RestServer(server);
     }
 
     /**

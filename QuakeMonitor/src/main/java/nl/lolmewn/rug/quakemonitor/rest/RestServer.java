@@ -6,11 +6,11 @@ import static spark.Spark.*;
 /**
  * @author Sybren
  */
-public class Status {
+public class RestServer {
 
     private final Server server;
 
-    public Status(Server server) {
+    public RestServer(Server server) {
         this.server = server;
         get("/status", (req, res)-> server.getPort());
     }
