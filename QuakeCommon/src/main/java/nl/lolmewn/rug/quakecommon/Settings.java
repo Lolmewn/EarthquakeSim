@@ -3,11 +3,14 @@ package nl.lolmewn.rug.quakecommon;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
@@ -20,6 +23,7 @@ public class Settings {
 
     private final String fileName;
     private final Properties properties;
+    private boolean newSettings = false;
 
     public Settings(String fileName) throws IOException {
         this.fileName = fileName;
@@ -37,6 +41,7 @@ public class Settings {
     }
 
     private void exportSettings() throws IOException {
+        newSettings = true;
         File file = new File(fileName);
         file.createNewFile();
         // Init all streams to auto-close on exit of try
@@ -73,6 +78,32 @@ public class Settings {
             }
         }
         return servers;
+    }
+
+    public boolean isNewSettings() {
+        return newSettings;
+    }
+
+    public synchronized Object setProperty(String key, String value) {
+        return properties.setProperty(key, value);
+    }
+
+    public String getProperty(String key) {
+        return properties.getProperty(key);
+    }
+
+    public void save() throws IOException {
+        File file = new File(this.fileName);
+        if (!file.exists()) {
+            file.createNewFile();
+        }
+        try (FileOutputStream out = new FileOutputStream(file)) {
+            properties.store(out, "Saved on " + getDateString());
+        }
+    }
+
+    private String getDateString() {
+        return DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
     }
 
 }

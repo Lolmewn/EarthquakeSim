@@ -23,9 +23,8 @@ public abstract class DataPacket implements Serializable {
 
     public void send(Socket socket) throws IOException {
         String json = GSON.toJson(this);
-        try (PrintWriter writer = new PrintWriter(socket.getOutputStream())) {
-            writer.println(json);
-        }
+        PrintWriter writer = new PrintWriter(socket.getOutputStream());
+        writer.println(json);
     }
 
     public static DataPacket receive(String json) {
