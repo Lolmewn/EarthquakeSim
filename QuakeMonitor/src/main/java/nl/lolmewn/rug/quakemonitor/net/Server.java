@@ -53,7 +53,9 @@ public class Server implements Runnable {
     }
 
     private void acceptInput(Socket incoming) {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream())); /*PrintWriter out = new PrintWriter(incoming.getOutputStream())*/) {
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+            /*PrintWriter out = new PrintWriter(incoming.getOutputStream())*/
             String read = in.readLine();
             System.out.println(":: " + read);
             DataPacket packet = DataPacket.receive(read);
@@ -69,11 +71,8 @@ public class Server implements Runnable {
                 new ResponseServersPacket(null).send(socket);
                 return;
             case RESPONSE_SERVERS:
-                // Handle from other servers
+            // Handle from other servers
         }
-    }
-
-    private void sendServers() {
     }
 
     public int getPort() {
