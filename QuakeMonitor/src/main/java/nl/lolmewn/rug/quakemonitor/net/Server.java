@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.lolmewn.rug.quakecommon.GsonHelper;
+import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakecommon.net.packet.DataPacket;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
@@ -18,10 +20,12 @@ import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
 public class Server implements Runnable {
 
     private final int port;
+    private final Settings settings;
     private ServerSocket serverSocket;
 
-    public Server(int port) {
+    public Server(int port, Settings settings) {
         this.port = port;
+        this.settings = settings;
     }
 
     public void start() throws IOException {
@@ -44,6 +48,7 @@ public class Server implements Runnable {
                 Socket incoming = serverSocket.accept();
                 System.out.println("Got connection from " + incoming.getInetAddress() + ":" + incoming.getPort());
                 Threader.runTask(() -> {
+                    System.out.println("Accepting in separate thread...");
                     acceptInput(incoming);
                 });
             } catch (IOException ex) {
@@ -54,21 +59,21 @@ public class Server implements Runnable {
 
     private void acceptInput(Socket incoming) {
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-            /*PrintWriter out = new PrintWriter(incoming.getOutputStream())*/
-            String read = in.readLine();
-            System.out.println(":: " + read);
-            DataPacket packet = DataPacket.receive(read);
-            handlePacket(packet, incoming);
+            while (incoming.isConnected() && !incoming.isClosed()) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
+                DataPacket packet = (DataPacket) GsonHelper.receive(in);
+                handlePacket(packet, incoming);
+            }
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private void handlePacket(DataPacket packet, Socket socket) throws IOException {
+        System.out.println("Received packet type " + packet.getPacketType());
         switch (packet.getPacketType()) {
             case REQUEST_SERVERS:
-                new ResponseServersPacket(null).send(socket);
+                GsonHelper.send(socket, new ResponseServersPacket(this.settings.getServers()));
                 return;
             case RESPONSE_SERVERS:
             // Handle from other servers
