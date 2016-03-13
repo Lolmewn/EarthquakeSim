@@ -18,3 +18,5 @@ dist/
 nbdist/
 nbactions.xml
 .nb-gradle/
+/QuakeSensor/nbproject/
+target/
