@@ -1,6 +1,6 @@
 package nl.lolmewn.rug.quakecommon.net.packet;
 
-import java.util.List;
+import java.util.Set;
 import nl.lolmewn.rug.quakecommon.net.PacketType;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 
@@ -8,11 +8,11 @@ import nl.lolmewn.rug.quakecommon.net.ServerAddress;
  *
  * @author Lolmewn
  */
-public class ResponseServersPacket extends DataPacket {
+public class ResponseServersPacket implements DataPacket {
 
-    private final List<ServerAddress> addresses;
+    private final Set<ServerAddress> addresses;
 
-    public ResponseServersPacket(List<ServerAddress> addrs) {
+    public ResponseServersPacket(Set<ServerAddress> addrs) {
         this.addresses = addrs;
     }
 
@@ -21,7 +21,7 @@ public class ResponseServersPacket extends DataPacket {
         return PacketType.RESPONSE_SERVERS;
     }
 
-    public List<ServerAddress> getAddresses() {
+    public Set<ServerAddress> getAddresses() {
         return addresses;
     }
 

@@ -8,11 +8,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Properties;
+import java.util.Set;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 
 /**
@@ -20,17 +18,17 @@ import nl.lolmewn.rug.quakecommon.net.ServerAddress;
  * @author Lolmewn
  */
 public class Settings {
-
+    
     private final String fileName;
     private final Properties properties;
     private boolean newSettings = false;
-
+    
     public Settings(String fileName) throws IOException {
         this.fileName = fileName;
         properties = new Properties();
         load();
     }
-
+    
     private void load() throws IOException {
         File file = new File(fileName);
         if (!file.exists()) {
@@ -39,7 +37,7 @@ public class Settings {
         }
         properties.load(new FileInputStream(file));
     }
-
+    
     private void exportSettings() throws IOException {
         newSettings = true;
         File file = new File(fileName);
@@ -55,9 +53,9 @@ public class Settings {
             out.flush();
         }
     }
-
-    public List<ServerAddress> getServers() {
-        List<ServerAddress> servers = new ArrayList<>();
+    
+    public Set<ServerAddress> getServers() {
+        Set<ServerAddress> servers = new HashSet<>();
         // servers is defined as address,port;address,port... etc
         String stringOfServers = properties.getProperty("servers");
         String[] arrayOfServers = stringOfServers.split(";");
@@ -79,31 +77,37 @@ public class Settings {
         }
         return servers;
     }
-
+    
+    public void saveServers(Set<ServerAddress> list) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        list.stream().forEach(sa -> {
+            sb.append(sa.getAddress()).append(",").append(sa.getPort()).append(";");
+        });
+        String servers = sb.substring(0, sb.length() - 1); // Remove trailing ;
+        this.properties.setProperty("servers", servers);
+        this.save();
+    }
+    
     public boolean isNewSettings() {
         return newSettings;
     }
-
+    
     public synchronized Object setProperty(String key, String value) {
         return properties.setProperty(key, value);
     }
-
+    
     public String getProperty(String key) {
         return properties.getProperty(key);
     }
-
+    
     public void save() throws IOException {
         File file = new File(this.fileName);
         if (!file.exists()) {
             file.createNewFile();
         }
         try (FileOutputStream out = new FileOutputStream(file)) {
-            properties.store(out, "Saved on " + getDateString());
+            properties.store(out, "They want me to add a comment, so I did.");
         }
     }
-
-    private String getDateString() {
-        return DateFormat.getInstance().format(new Date(System.currentTimeMillis()));
-    }
-
+    
 }

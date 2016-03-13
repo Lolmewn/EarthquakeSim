@@ -6,7 +6,7 @@ import nl.lolmewn.rug.quakecommon.net.PacketType;
  *
  * @author Lolmewn
  */
-public class SimpleDataRequest extends DataPacket {
+public class SimpleDataRequest implements DataPacket {
 
     private final PacketType packetType;
 
