@@ -42,10 +42,8 @@ public class Sensor implements Runnable {
             // Poll data from sensor; in this case, the simulator.
             SenseData data = simulator.getNextData();
             String message = GsonHelper.gsonify(data);
-            System.out.println(message);
             try {
                 this.dataChannel.basicPublish("", SensorMain.DATA_QUEUE_NAME, null, message.getBytes());
-                System.out.println(message);
             } catch (IOException ex) {
                 Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
             }
