@@ -10,7 +10,7 @@ public class Main {
     
     public static void main(String[] args) {
         System.out.println("Starting sensor...");
-        Sensor sensor = new Sensor();
+        SensorMain sensor = new SensorMain();
         
         System.out.println("Launching GUI...");
         MainGUI gui = new MainGUI(sensor);

@@ -24,9 +24,9 @@ import nl.lolmewn.rug.quakesensor.net.ServerManager;
  */
 public class ServerSyncer implements Runnable {
 
-    private final Sensor sensor;
+    private final SensorMain sensor;
 
-    public ServerSyncer(Sensor sensor) {
+    public ServerSyncer(SensorMain sensor) {
         this.sensor = sensor;
         System.out.println("Syncing known servers with other servers...");
         Threader.runTask(this);
@@ -77,7 +77,7 @@ public class ServerSyncer implements Runnable {
         System.out.println("Checking for active servers...");
         for (Server server : this.getServerManager().getServers()) {
             try {
-                System.out.println("Connecting to " + server.toString() + "... ");
+                System.out.print("Connecting to " + server.toString() + "... ");
                 server.connect();
                 if (server.isConnected()) {
                     System.out.println("online.");

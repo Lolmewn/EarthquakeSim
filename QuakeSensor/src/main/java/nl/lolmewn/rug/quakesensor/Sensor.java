@@ -1,11 +1,14 @@
 package nl.lolmewn.rug.quakesensor;
 
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import nl.lolmewn.rug.quakecommon.Settings;
-import nl.lolmewn.rug.quakesensor.net.ServerManager;
+import nl.lolmewn.rug.quakecommon.GsonHelper;
+import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 import nl.lolmewn.rug.quakesensor.sim.SenseData;
 
@@ -13,55 +16,49 @@ import nl.lolmewn.rug.quakesensor.sim.SenseData;
  *
  * @author Lolmewn
  */
-public class Sensor {
+public class Sensor implements Runnable {
 
-    private Settings settings;
-    private ServerManager serverManager;
+    private final QuakeSimulator simulator;
+    private final Channel dataChannel;
 
-    public Sensor() {
-        loadSettings();
-        loadServerManager();
-        new ServerSyncer(this);
-        new QuakeSimulator(this);
+    public Sensor(QuakeSimulator simulator) throws IOException, TimeoutException {
+        this.simulator = simulator;
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+        Connection connection = factory.newConnection();
+        dataChannel = connection.createChannel();
+        dataChannel.queueDeclare(SensorMain.DATA_QUEUE_NAME, false, false, false, null);
+        Threader.runTask(this);
+        System.out.println("=== Sensor online and collecting data ===");
     }
 
-    public Settings getSettings() {
-        return settings;
+    public SenseData sense() {
+        return simulator.getNextData();
     }
 
-    public ServerManager getServerManager() {
-        return serverManager;
-    }
-
-    private void loadSettings() {
-        try {
-            this.settings = new Settings("settings.properties");
-            if (settings.isNewSettings()) {
-                this.settings.setProperty("uuid", UUID.randomUUID().toString());
-                this.settings.save();
+    @Override
+    public void run() {
+        while (true) {
+            // Poll data from sensor; in this case, the simulator.
+            SenseData data = simulator.getNextData();
+            String message = GsonHelper.gsonify(data);
+            System.out.println(message);
+            try {
+                this.dataChannel.basicPublish("", SensorMain.DATA_QUEUE_NAME, null, message.getBytes());
+                System.out.println(message);
+            } catch (IOException ex) {
+                Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
             }
-        } catch (IOException ex) {
-            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
-            System.err.println("Failed to generate config, cannot start.");
-            System.exit(1);
+            sleep(1000 / SensorMain.POLLS_PER_SECOND);
         }
     }
 
-    private void loadServerManager() {
-        this.serverManager = new ServerManager();
-        this.settings.getServers().stream().forEach(address -> {
-            try {
-                System.out.print("Connecting to " + address.toString() + "...");
-                serverManager.load(address);
-                System.out.println(" online.");
-            } catch (IOException ex) {
-                System.out.println(" offline. (" + ex.getLocalizedMessage() + ")");
-            }
-        });
-    }
-
-    public void sense(SenseData senseData) {
-        
+    public void sleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Sensor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

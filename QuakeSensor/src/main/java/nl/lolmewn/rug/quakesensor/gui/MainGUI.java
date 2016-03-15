@@ -3,7 +3,7 @@ package nl.lolmewn.rug.quakesensor.gui;
 import java.awt.EventQueue;
 import javax.swing.table.DefaultTableModel;
 import nl.lolmewn.rug.quakecommon.Threader;
-import nl.lolmewn.rug.quakesensor.Sensor;
+import nl.lolmewn.rug.quakesensor.SensorMain;
 
 /**
  *
@@ -11,14 +11,14 @@ import nl.lolmewn.rug.quakesensor.Sensor;
  */
 public class MainGUI extends javax.swing.JFrame {
 
-    private final Sensor main;
+    private final SensorMain main;
 
     /**
      * Initializes the MainGUI
      *
      * @param main Main program
      */
-    public MainGUI(Sensor main) {
+    public MainGUI(SensorMain main) {
         this.main = main;
         this.setSize(400, 335);
         this.setResizable(false);
