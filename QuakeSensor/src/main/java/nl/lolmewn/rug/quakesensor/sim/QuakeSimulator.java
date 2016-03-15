@@ -43,18 +43,18 @@ public class QuakeSimulator implements Runnable {
     }
 
     private void simulateQuake() {
-        int quakeTimeSeconds = ThreadLocalRandom.current().nextInt(5, 10); // quake between 5 and 30 seconds long.
+        int quakeTimeSeconds = ThreadLocalRandom.current().nextInt(2, 4); // quake between 5 and 30 seconds long.
         long quakeStartTime = System.currentTimeMillis();
-        for (int second = 0; second < quakeTimeSeconds; second++) {
-            for (int nrInSecond = 0; second < SensorMain.POLLS_PER_SECOND; second++) {
-                int msOffset = second * 1000 + nrInSecond * (1000 / SensorMain.POLLS_PER_SECOND);
-                double acceleration = getAccelerationAt(
-                        second * SensorMain.POLLS_PER_SECOND + nrInSecond,
-                        quakeTimeSeconds * SensorMain.POLLS_PER_SECOND
-                );
-                System.out.println(String.format("acc: %.3f at %d", acceleration, quakeStartTime + msOffset));
-                quakeQueue.add(new SenseData(acceleration, quakeStartTime + msOffset));
-            }
+        int totalDataPoints = quakeTimeSeconds * SensorMain.POLLS_PER_SECOND;
+        int timePerDataPoint = 1000 / SensorMain.POLLS_PER_SECOND;
+        for (int dataPointNr = 0; dataPointNr < totalDataPoints; dataPointNr++) {
+            int msOffset = dataPointNr * timePerDataPoint;
+            double acceleration = getAccelerationAt(
+                    dataPointNr,
+                    quakeTimeSeconds * SensorMain.POLLS_PER_SECOND
+            );
+            System.out.println(String.format("acc: %.3f at %d", acceleration, quakeStartTime + msOffset));
+            quakeQueue.add(new SenseData(acceleration, quakeStartTime + msOffset));
         }
     }
 
