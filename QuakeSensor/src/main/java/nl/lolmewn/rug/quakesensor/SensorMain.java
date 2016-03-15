@@ -1,5 +1,7 @@
 package nl.lolmewn.rug.quakesensor;
 
+import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
+import nl.lolmewn.rug.quakesensor.mq.Sensor;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;

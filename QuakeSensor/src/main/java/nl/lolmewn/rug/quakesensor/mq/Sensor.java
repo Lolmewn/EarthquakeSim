@@ -1,4 +1,4 @@
-package nl.lolmewn.rug.quakesensor;
+package nl.lolmewn.rug.quakesensor.mq;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Threader;
+import nl.lolmewn.rug.quakesensor.SensorMain;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 import nl.lolmewn.rug.quakesensor.sim.SenseData;
 

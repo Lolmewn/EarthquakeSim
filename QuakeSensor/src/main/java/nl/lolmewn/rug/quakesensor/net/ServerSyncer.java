@@ -1,4 +1,4 @@
-package nl.lolmewn.rug.quakesensor;
+package nl.lolmewn.rug.quakesensor.net;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import nl.lolmewn.rug.quakecommon.net.PacketType;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
 import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataRequest;
+import nl.lolmewn.rug.quakesensor.SensorMain;
 import nl.lolmewn.rug.quakesensor.net.Server;
 import nl.lolmewn.rug.quakesensor.net.ServerManager;
 
