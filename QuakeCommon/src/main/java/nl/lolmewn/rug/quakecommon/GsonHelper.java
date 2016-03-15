@@ -48,4 +48,8 @@ public class GsonHelper {
         }
         return GSON.fromJson(buffer.toString(), DataPacket.class);
     }
+
+    public static String gsonify(Object data) {
+        return GSON.toJson(data);
+    }
 }
