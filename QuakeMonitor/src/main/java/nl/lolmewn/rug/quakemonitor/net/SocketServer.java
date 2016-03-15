@@ -17,13 +17,13 @@ import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
  *
  * @author Lolmewn
  */
-public class Server implements Runnable {
+public class SocketServer implements Runnable {
 
     private final int port;
     private final Settings settings;
     private ServerSocket serverSocket;
 
-    public Server(int port, Settings settings) {
+    public SocketServer(int port, Settings settings) {
         this.port = port;
         this.settings = settings;
     }
@@ -52,7 +52,7 @@ public class Server implements Runnable {
                     acceptInput(incoming);
                 });
             } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(SocketServer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -65,7 +65,7 @@ public class Server implements Runnable {
                 handlePacket(packet, incoming);
             }
         } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(SocketServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

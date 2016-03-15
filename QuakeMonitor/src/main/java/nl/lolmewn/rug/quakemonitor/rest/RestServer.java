@@ -1,6 +1,6 @@
 package nl.lolmewn.rug.quakemonitor.rest;
 
-import nl.lolmewn.rug.quakemonitor.net.Server;
+import nl.lolmewn.rug.quakemonitor.net.SocketServer;
 import static spark.Spark.*;
 
 /**
@@ -8,9 +8,9 @@ import static spark.Spark.*;
  */
 public class RestServer {
 
-    private final Server server;
+    private final SocketServer server;
 
-    public RestServer(Server server) {
+    public RestServer(SocketServer server) {
         this.server = server;
         get("/status", (req, res)-> server.getPort());
     }

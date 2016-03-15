@@ -6,19 +6,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import nl.lolmewn.rug.quakecommon.Settings;
-import nl.lolmewn.rug.quakemonitor.net.Server;
-import nl.lolmewn.rug.quakemonitor.rest.RestServer;
 
 public class MainApp extends Application {
-
-    private Settings settings;
-    private Server server;
-    private RestServer rest;
     
     @Override
     public void start(Stage stage) throws Exception {
-        this.settings = new Settings("config.properties");
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
 
         Scene scene = new Scene(root);
@@ -32,10 +24,6 @@ public class MainApp extends Application {
         });
         
         System.out.println("GUI launched, launching server...");
-        this.server = new Server(5000, settings);
-        this.server.start();
-        
-        this.rest = new RestServer(server);
     }
 
     /**

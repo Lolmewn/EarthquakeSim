@@ -8,31 +8,61 @@ import com.lynden.gmapsfx.javascript.object.MapOptions;
 import com.lynden.gmapsfx.javascript.object.MapTypeIdEnum;
 import com.lynden.gmapsfx.javascript.object.Marker;
 import com.lynden.gmapsfx.javascript.object.MarkerOptions;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
+import nl.lolmewn.rug.quakecommon.Settings;
+import nl.lolmewn.rug.quakemonitor.net.SocketServer;
+import nl.lolmewn.rug.quakemonitor.rest.RestServer;
 
 public class FXMLController implements Initializable, MapComponentInitializedListener {
 
     private static final NumberFormat FORMATTER = new DecimalFormat("#0.000000");
-    
+    private GoogleMap map;
+
+    private Settings settings;
+    private SocketServer server;
+    private RestServer rest;
+
+    /**
+     * FXML variables, these get loaded by JavaFX
+     */
     @FXML
     private GoogleMapView mapView;
     @FXML
     private Label longCoord;
     @FXML
     private Label latCoord;
-    private GoogleMap map;
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // TODO
         mapView.addMapInializedListener(this);
+        try {
+            this.settings = new Settings("config.properties");
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Couldn't load settings; shutting down QuakeServer...");
+            System.exit(1);
+        }
+        this.server = new SocketServer(5000, settings);
+        try {
+            this.server.start();
+        } catch (IOException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Couldn't start server; shutting down QuakeServer...");
+            System.exit(1);
+        }
+
+        this.rest = new RestServer(server);
     }
 
     @Override
