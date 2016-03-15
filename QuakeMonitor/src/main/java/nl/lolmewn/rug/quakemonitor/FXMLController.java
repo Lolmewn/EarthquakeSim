@@ -13,6 +13,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.EventType;
@@ -20,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import nl.lolmewn.rug.quakecommon.Settings;
+import nl.lolmewn.rug.quakemonitor.mq.QuakeDataConsumer;
 import nl.lolmewn.rug.quakemonitor.net.SocketServer;
 import nl.lolmewn.rug.quakemonitor.rest.RestServer;
 
@@ -30,7 +32,6 @@ public class FXMLController implements Initializable, MapComponentInitializedLis
 
     private Settings settings;
     private SocketServer server;
-    private RestServer rest;
 
     /**
      * FXML variables, these get loaded by JavaFX
@@ -61,8 +62,14 @@ public class FXMLController implements Initializable, MapComponentInitializedLis
             System.err.println("Couldn't start server; shutting down QuakeServer...");
             System.exit(1);
         }
-
-        this.rest = new RestServer(server);
+        new RestServer(server);
+        try {
+            new QuakeDataConsumer();
+        } catch (IOException | TimeoutException ex) {
+            Logger.getLogger(FXMLController.class.getName()).log(Level.SEVERE, null, ex);
+            System.err.println("Could not start quake data consumer; shutting down QuakeServer...");
+            System.exit(1);
+        }
     }
 
     @Override
@@ -95,6 +102,7 @@ public class FXMLController implements Initializable, MapComponentInitializedLis
         mapView.addEventHandler(EventType.ROOT, (e) -> {
             mouseMoveMap();
         });
+        mouseMoveMap();
     }
 
     private void mouseMoveMap() {
