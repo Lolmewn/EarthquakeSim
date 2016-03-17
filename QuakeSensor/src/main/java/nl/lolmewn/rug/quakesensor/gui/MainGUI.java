@@ -1,6 +1,8 @@
 package nl.lolmewn.rug.quakesensor.gui;
 
 import java.awt.EventQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakesensor.SensorMain;
@@ -9,7 +11,7 @@ import nl.lolmewn.rug.quakesensor.SensorMain;
  *
  * @author Lolmewn
  */
-public class MainGUI extends javax.swing.JFrame {
+public class MainGUI extends javax.swing.JFrame implements Runnable {
 
     private final SensorMain main;
 
@@ -27,6 +29,7 @@ public class MainGUI extends javax.swing.JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         loadServersToUI();
+        initQuakeDrawer();
     }
 
     /**
@@ -40,20 +43,29 @@ public class MainGUI extends javax.swing.JFrame {
 
         Tabs = new javax.swing.JTabbedPane();
         sensorPanel = new javax.swing.JPanel();
-        startButton = new javax.swing.JButton();
         sensorStatusLabel = new javax.swing.JLabel();
         statusField = new javax.swing.JLabel();
+        quakeGraphPanel = new QuakeGraph();
         serversPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         serversTable = new javax.swing.JTable();
         addNewServerButton = new javax.swing.JButton();
         removeServerButton = new javax.swing.JButton();
 
-        startButton.setText("Start sensor");
-
         sensorStatusLabel.setText("Sensor status");
 
         statusField.setText("Starting...");
+
+        javax.swing.GroupLayout quakeGraphPanelLayout = new javax.swing.GroupLayout(quakeGraphPanel);
+        quakeGraphPanel.setLayout(quakeGraphPanelLayout);
+        quakeGraphPanelLayout.setHorizontalGroup(
+            quakeGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        quakeGraphPanelLayout.setVerticalGroup(
+            quakeGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 200, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout sensorPanelLayout = new javax.swing.GroupLayout(sensorPanel);
         sensorPanel.setLayout(sensorPanelLayout);
@@ -62,25 +74,20 @@ public class MainGUI extends javax.swing.JFrame {
             .addGroup(sensorPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sensorPanelLayout.createSequentialGroup()
-                        .addComponent(sensorStatusLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE)
-                        .addComponent(startButton))
-                    .addGroup(sensorPanelLayout.createSequentialGroup()
-                        .addComponent(statusField)
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(sensorStatusLabel)
+                    .addComponent(statusField))
+                .addContainerGap(329, Short.MAX_VALUE))
+            .addComponent(quakeGraphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         sensorPanelLayout.setVerticalGroup(
             sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sensorPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(startButton)
-                    .addComponent(sensorStatusLabel))
+                .addComponent(sensorStatusLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusField)
-                .addContainerGap(226, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                .addComponent(quakeGraphPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         Tabs.addTab("Sensor", sensorPanel);
@@ -190,12 +197,12 @@ public class MainGUI extends javax.swing.JFrame {
     private javax.swing.JTabbedPane Tabs;
     private javax.swing.JButton addNewServerButton;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel quakeGraphPanel;
     private javax.swing.JButton removeServerButton;
     private javax.swing.JPanel sensorPanel;
     private javax.swing.JLabel sensorStatusLabel;
     private javax.swing.JPanel serversPanel;
     private javax.swing.JTable serversTable;
-    private javax.swing.JButton startButton;
     private javax.swing.JLabel statusField;
     // End of variables declaration//GEN-END:variables
 
@@ -208,5 +215,21 @@ public class MainGUI extends javax.swing.JFrame {
     private void addServerToUI(String IP, int port, String status) {
         DefaultTableModel dtm = (DefaultTableModel) serversTable.getModel();
         dtm.addRow(new Object[]{IP, port, status});
+    }
+
+    private void initQuakeDrawer() {
+        Threader.runTask(this);
+    }
+
+    @Override
+    public void run() {
+        while (true) {
+            this.quakeGraphPanel.repaint();
+            try {
+                Thread.sleep(1000 / SensorMain.POLLS_PER_SECOND);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
 }

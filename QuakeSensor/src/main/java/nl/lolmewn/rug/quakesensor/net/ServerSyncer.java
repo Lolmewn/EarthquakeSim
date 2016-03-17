@@ -48,7 +48,6 @@ public class ServerSyncer implements Runnable {
             }
             Socket socket = activeServer.getSocket();
             try {
-                System.out.println("Sending REQUEST_SERVERS...");
                 GsonHelper.send(socket, new SimpleDataPacket(PacketType.REQUEST_SERVERS));
                 System.out.println("Reading reply...");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));

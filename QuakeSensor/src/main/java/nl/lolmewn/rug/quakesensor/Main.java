@@ -13,7 +13,7 @@ public class Main {
         SensorMain sensorMain = new SensorMain();
 
         System.out.println("Launching GUI...");
-        MainGUI gui = new MainGUI(sensorMain);
+        new MainGUI(sensorMain);
         Thread shutdownThread = new Thread(() -> {
             sensorMain.notifySensorOffline();
         });

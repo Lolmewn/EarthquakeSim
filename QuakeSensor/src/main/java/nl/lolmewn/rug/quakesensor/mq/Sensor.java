@@ -10,6 +10,7 @@ import java.util.logging.Logger;
 import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakesensor.SensorMain;
+import nl.lolmewn.rug.quakesensor.gui.QuakeGraph;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 import nl.lolmewn.rug.quakesensor.sim.SenseData;
 
@@ -42,6 +43,7 @@ public class Sensor implements Runnable {
         while (true) {
             // Poll data from sensor; in this case, the simulator.
             SenseData data = simulator.getNextData();
+            QuakeGraph.addDatapoint(data); // add data point to GUI
             String message = GsonHelper.gsonify(data);
             try {
                 this.dataChannel.basicPublish("", SensorMain.DATA_QUEUE_NAME, null, message.getBytes());
