@@ -5,11 +5,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakecommon.Threader;
+import nl.lolmewn.rug.quakecommon.net.PacketType;
 import nl.lolmewn.rug.quakecommon.net.packet.DataPacket;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
 
@@ -62,9 +64,18 @@ public class SocketServer implements Runnable {
             while (incoming.isConnected() && !incoming.isClosed()) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
                 DataPacket packet = (DataPacket) GsonHelper.receive(in);
+                if (packet.getPacketType() == PacketType.SENSOR_OFFLINE) {
+                    incoming.close();
+                    return;
+                }
                 handlePacket(packet, incoming);
             }
         } catch (IOException ex) {
+            if (ex instanceof SocketException && ex.getMessage().contains("Connection reset")) {
+                // socket closed externally and not through SENSOR_OFFLINE
+                System.err.println("Socket closed abrubtly (" + incoming.getInetAddress() + ":" + incoming.getPort() + ")");
+                return;
+            }
             Logger.getLogger(SocketServer.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -77,6 +88,8 @@ public class SocketServer implements Runnable {
                 return;
             case RESPONSE_SERVERS:
             // Handle from other servers
+            default:
+                System.out.println("Received " + packet.getPacketType());
         }
     }
 

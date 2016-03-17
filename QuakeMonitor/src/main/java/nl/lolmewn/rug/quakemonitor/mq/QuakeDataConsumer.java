@@ -34,7 +34,7 @@ public class QuakeDataConsumer {
 
     private void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) {
         String message = new String(body);
-        System.out.println("Handling " + consumerTag + ": " + message);
+        // TODO
     }
 
 }
