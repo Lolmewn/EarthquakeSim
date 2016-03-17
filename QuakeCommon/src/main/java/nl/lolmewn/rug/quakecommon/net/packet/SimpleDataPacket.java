@@ -6,11 +6,11 @@ import nl.lolmewn.rug.quakecommon.net.PacketType;
  *
  * @author Lolmewn
  */
-public class SimpleDataRequest implements DataPacket {
+public class SimpleDataPacket implements DataPacket {
 
     private final PacketType packetType;
 
-    public SimpleDataRequest(PacketType packetType) {
+    public SimpleDataPacket(PacketType packetType) {
         this.packetType = packetType;
     }
 
