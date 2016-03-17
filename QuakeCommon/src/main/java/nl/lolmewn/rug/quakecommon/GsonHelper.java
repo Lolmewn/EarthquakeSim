@@ -30,6 +30,7 @@ public class GsonHelper {
     }
 
     public static void send(Socket socket, DataPacket packet) throws IOException {
+        System.out.println("Sending " + packet.getPacketType());
         String json = GSON.toJson(packet, DataPacket.class);
         PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
         writer.println(json);
