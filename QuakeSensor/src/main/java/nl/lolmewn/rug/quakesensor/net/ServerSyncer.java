@@ -14,10 +14,8 @@ import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakecommon.net.PacketType;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
-import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataRequest;
+import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataPacket;
 import nl.lolmewn.rug.quakesensor.SensorMain;
-import nl.lolmewn.rug.quakesensor.net.Server;
-import nl.lolmewn.rug.quakesensor.net.ServerManager;
 
 /**
  *
@@ -38,7 +36,7 @@ public class ServerSyncer implements Runnable {
         while (true) {
             // Let's look for a free server
             System.out.println("Starting sync...");
-            Server activeServer = getActiveServer();
+            Server activeServer = this.getServerManager().getActiveServer();
             if (activeServer == null) {
                 System.out.println("No servers online, cannot sync servers. Trying again in 1 minute");
                 try {
@@ -51,7 +49,7 @@ public class ServerSyncer implements Runnable {
             Socket socket = activeServer.getSocket();
             try {
                 System.out.println("Sending REQUEST_SERVERS...");
-                GsonHelper.send(socket, new SimpleDataRequest(PacketType.REQUEST_SERVERS));
+                GsonHelper.send(socket, new SimpleDataPacket(PacketType.REQUEST_SERVERS));
                 System.out.println("Reading reply...");
                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 ResponseServersPacket packet = (ResponseServersPacket) GsonHelper.receive(reader);
@@ -66,29 +64,6 @@ public class ServerSyncer implements Runnable {
                 Logger.getLogger(ServerSyncer.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-    }
-
-    private Server getActiveServer() {
-        for (Server server : this.getServerManager().getServers()) {
-            if (server.isConnected()) {
-                return server;
-            }
-        }
-        // No active sockets; let's check for active servers.
-        System.out.println("Checking for active servers...");
-        for (Server server : this.getServerManager().getServers()) {
-            try {
-                System.out.print("Connecting to " + server.toString() + "... ");
-                server.connect();
-                if (server.isConnected()) {
-                    System.out.println("online.");
-                    return server;
-                }
-            } catch (IOException ex) {
-                System.out.println("offline. (" + ex.getLocalizedMessage() + ")");
-            }
-        }
-        return null; // no connected servers
     }
 
     public Set<ServerAddress> combine(Set<ServerAddress> own, Set<ServerAddress> other) {

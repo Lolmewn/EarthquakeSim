@@ -1,14 +1,17 @@
 package nl.lolmewn.rug.quakesensor;
 
-import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
-import nl.lolmewn.rug.quakesensor.mq.Sensor;
 import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Settings;
+import nl.lolmewn.rug.quakecommon.net.PacketType;
+import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataPacket;
+import nl.lolmewn.rug.quakesensor.mq.Sensor;
 import nl.lolmewn.rug.quakesensor.net.ServerManager;
+import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 import nl.lolmewn.rug.quakesensor.sim.SenseData;
 
@@ -36,6 +39,7 @@ public class SensorMain {
             System.err.println("Could not start sensor; shutting down.");
             System.exit(1);
         }
+        notifySensorOnline(); // Notify all online servers that we're in business
     }
 
     public Settings getSettings() {
@@ -75,6 +79,26 @@ public class SensorMain {
 
     public void sense(SenseData senseData) {
 
+    }
+
+    private void notifySensorOnline() {
+        getServerManager().getServers().stream().filter((server) -> (server.isConnected())).forEach((server) -> {
+            try {
+                GsonHelper.send(server.getSocket(), new SimpleDataPacket(PacketType.SENSOR_ONLINE));
+            } catch (IOException ex) {
+                Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
+    }
+
+    public void notifySensorOffline() {
+        getServerManager().getServers().stream().filter((server) -> (server.isConnected())).forEach((server) -> {
+            try {
+                GsonHelper.send(server.getSocket(), new SimpleDataPacket(PacketType.SENSOR_OFFLINE));
+            } catch (IOException ex) {
+                Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        });
     }
 
 }

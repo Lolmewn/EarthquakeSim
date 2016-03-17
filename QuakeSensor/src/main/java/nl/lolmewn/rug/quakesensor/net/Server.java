@@ -1,9 +1,9 @@
 package nl.lolmewn.rug.quakesensor.net;
 
-import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 
 /**
  *
@@ -37,6 +37,7 @@ public class Server {
         if (socket == null || socket.isClosed()) {
             return;
         }
+        System.out.println("Closing socket to " + address.toString());
         socket.close();
     }
 
