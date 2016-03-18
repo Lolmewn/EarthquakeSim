@@ -64,7 +64,7 @@ public class SensorMain {
     }
 
     private void loadServerManager() {
-        this.serverManager = new ServerManager();
+        this.serverManager = new ServerManager(settings);
         this.settings.getServers().stream().forEach(address -> {
             try {
                 System.out.print("Connecting to " + address.toString() + "...");

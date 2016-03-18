@@ -34,10 +34,6 @@ public class Sensor implements Runnable {
         System.out.println("=== Sensor online and collecting data ===");
     }
 
-    public SenseData sense() {
-        return simulator.getNextData();
-    }
-
     @Override
     public void run() {
         while (true) {

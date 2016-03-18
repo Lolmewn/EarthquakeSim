@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
+import nl.lolmewn.rug.quakesensor.SensorMain;
 
 /**
  *
@@ -13,6 +18,11 @@ import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 public class ServerManager {
 
     private final List<Server> servers = new ArrayList<>();
+    private final Settings settings;
+
+    public ServerManager(Settings settings) {
+        this.settings = settings;
+    }
 
     /**
      * Loads the connection data and connects to the endpoint
@@ -60,6 +70,35 @@ public class ServerManager {
             }
         }
         return null; // no connected servers
+    }
+
+    public void saveNewServer(String IP, int port) {
+        Set<ServerAddress> addresses = settings.getServers();
+        int size = addresses.size();
+        addresses.add(new ServerAddress(IP, port));
+        if (addresses.size() != size) { // Size changed, new item was added.
+            try {
+                settings.saveServers(addresses);
+            } catch (IOException ex) {
+                Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void deleteServer(String IP, int port) {
+        String allServers = settings.getProperty("servers");
+        String oneRemoved = allServers.replace(IP + ":" + port, "");
+        if (allServers.equals(oneRemoved)) {
+            // Not found
+            System.err.println("Failed to delete server (" + IP + ":" + port + "), ignornig.");
+            return;
+        }
+        settings.setProperty("servers", oneRemoved);
+        try {
+            settings.save();
+        } catch (IOException ex) {
+            Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }
