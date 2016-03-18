@@ -1,18 +1,21 @@
 package nl.lolmewn.rug.quakesensor.gui;
 
 import java.awt.EventQueue;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.DefaultTableModel;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakesensor.SensorMain;
+import nl.lolmewn.rug.quakesensor.net.Server;
 
 /**
  *
  * @author Lolmewn
  */
-public class MainGUI extends javax.swing.JFrame implements Runnable {
-
+public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
+    
     private final SensorMain main;
 
     /**
@@ -22,12 +25,13 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
      */
     public MainGUI(SensorMain main) {
         this.main = main;
-        this.setSize(400, 335);
         this.setResizable(false);
         initComponents();
+        this.yAxis.setUI(new VerticalLabelUI(false));
+        this.yAxis.setText("Ground Acceleration (m/s^2)");
         setVisible(true);
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-
+        
         loadServersToUI();
         initQuakeDrawer();
     }
@@ -43,51 +47,74 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
 
         Tabs = new javax.swing.JTabbedPane();
         sensorPanel = new javax.swing.JPanel();
-        sensorStatusLabel = new javax.swing.JLabel();
-        statusField = new javax.swing.JLabel();
+        packetLabel = new javax.swing.JLabel();
+        packetCounter = new javax.swing.JLabel();
         quakeGraphPanel = new QuakeGraph();
+        xAxis = new javax.swing.JLabel();
+        yAxis = new javax.swing.JLabel();
         serversPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         serversTable = new javax.swing.JTable();
         addNewServerButton = new javax.swing.JButton();
         removeServerButton = new javax.swing.JButton();
 
-        sensorStatusLabel.setText("Sensor status");
+        setSize(new java.awt.Dimension(500, 350));
 
-        statusField.setText("Starting...");
+        packetLabel.setText("Quake data packets sent: ");
+
+        packetCounter.setText("0");
+
+        xAxis.setText("time(seconds)");
 
         javax.swing.GroupLayout quakeGraphPanelLayout = new javax.swing.GroupLayout(quakeGraphPanel);
         quakeGraphPanel.setLayout(quakeGraphPanelLayout);
         quakeGraphPanelLayout.setHorizontalGroup(
             quakeGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(quakeGraphPanelLayout.createSequentialGroup()
+                .addGap(197, 197, 197)
+                .addComponent(xAxis)
+                .addContainerGap(211, Short.MAX_VALUE))
         );
         quakeGraphPanelLayout.setVerticalGroup(
             quakeGraphPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 200, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, quakeGraphPanelLayout.createSequentialGroup()
+                .addGap(0, 186, Short.MAX_VALUE)
+                .addComponent(xAxis))
         );
+
+        yAxis.setText("o");
 
         javax.swing.GroupLayout sensorPanelLayout = new javax.swing.GroupLayout(sensorPanel);
         sensorPanel.setLayout(sensorPanelLayout);
         sensorPanelLayout.setHorizontalGroup(
             sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(sensorPanelLayout.createSequentialGroup()
+                .addComponent(yAxis, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(quakeGraphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(sensorPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(sensorStatusLabel)
-                    .addComponent(statusField))
-                .addContainerGap(329, Short.MAX_VALUE))
-            .addComponent(quakeGraphPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(packetLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(packetCounter)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         sensorPanelLayout.setVerticalGroup(
             sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(sensorPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sensorPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(sensorStatusLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(statusField)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
-                .addComponent(quakeGraphPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(packetLabel)
+                    .addComponent(packetCounter))
+                .addGroup(sensorPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(sensorPanelLayout.createSequentialGroup()
+                        .addGap(69, 69, 69)
+                        .addComponent(yAxis)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, sensorPanelLayout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 58, Short.MAX_VALUE)
+                        .addComponent(quakeGraphPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39))))
         );
 
         Tabs.addTab("Sensor", sensorPanel);
@@ -137,7 +164,7 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
         serversPanel.setLayout(serversPanelLayout);
         serversPanelLayout.setHorizontalGroup(
             serversPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 495, Short.MAX_VALUE)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, serversPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(addNewServerButton)
@@ -153,7 +180,7 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
                 .addGroup(serversPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(addNewServerButton)
                     .addComponent(removeServerButton))
-                .addGap(0, 11, Short.MAX_VALUE))
+                .addGap(0, 53, Short.MAX_VALUE))
         );
 
         Tabs.addTab("Servers", serversPanel);
@@ -162,11 +189,11 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Tabs)
+            .addComponent(Tabs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Tabs)
+            .addComponent(Tabs, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -177,15 +204,7 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
                 addServerToUI(IP, port, "Checking...");
                 Threader.runTask(() -> {
                     boolean up = main.getServerManager().checkAvailability(IP, port);
-                    EventQueue.invokeLater(() -> {
-                        // Find idx for row
-                        DefaultTableModel dtm = (DefaultTableModel) serversTable.getModel();
-                        for (int row = 0; row < dtm.getRowCount(); row++) {
-                            if (dtm.getValueAt(row, 0).equals(IP) && dtm.getValueAt(row, 1).equals(port)) {
-                                dtm.setValueAt(up ? "Online" : "Offline", row, 2);
-                            }
-                        }
-                    });
+                    updateServer(IP, port, up);
                 });
             }
         };
@@ -197,30 +216,33 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
     private javax.swing.JTabbedPane Tabs;
     private javax.swing.JButton addNewServerButton;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JLabel packetCounter;
+    private javax.swing.JLabel packetLabel;
     private javax.swing.JPanel quakeGraphPanel;
     private javax.swing.JButton removeServerButton;
     private javax.swing.JPanel sensorPanel;
-    private javax.swing.JLabel sensorStatusLabel;
     private javax.swing.JPanel serversPanel;
     private javax.swing.JTable serversTable;
-    private javax.swing.JLabel statusField;
+    private javax.swing.JLabel xAxis;
+    private javax.swing.JLabel yAxis;
     // End of variables declaration//GEN-END:variables
 
     private void loadServersToUI() {
         main.getServerManager().getServers().stream().forEach((server) -> {
             addServerToUI(server.getAddress().getAddress(), server.getAddress().getPort(), server.isConnected() ? "Online" : "Offline");
+            server.addObserver(this);
         });
     }
-
+    
     private void addServerToUI(String IP, int port, String status) {
         DefaultTableModel dtm = (DefaultTableModel) serversTable.getModel();
         dtm.addRow(new Object[]{IP, port, status});
     }
-
+    
     private void initQuakeDrawer() {
         Threader.runTask(this);
     }
-
+    
     @Override
     public void run() {
         while (true) {
@@ -231,5 +253,25 @@ public class MainGUI extends javax.swing.JFrame implements Runnable {
                 Logger.getLogger(MainGUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    @Override
+    public void update(Observable o, Object o1) {
+        if (o instanceof Server) {
+            Server server = (Server) o;
+            updateServer(server.getAddress().getAddress(), server.getAddress().getPort(), server.isConnected());
+        }
+    }
+    
+    public void updateServer(String IP, int port, boolean online) {
+        EventQueue.invokeLater(() -> {
+            // Find idx for row
+            DefaultTableModel dtm = (DefaultTableModel) serversTable.getModel();
+            for (int row = 0; row < dtm.getRowCount(); row++) {
+                if (dtm.getValueAt(row, 0).equals(IP) && dtm.getValueAt(row, 1).equals(port)) {
+                    dtm.setValueAt(online ? "Online" : "Offline", row, 2);
+                }
+            }
+        });
     }
 }

@@ -53,7 +53,6 @@ public class QuakeSimulator implements Runnable {
                     dataPointNr,
                     quakeTimeSeconds * SensorMain.POLLS_PER_SECOND
             );
-            System.out.println(String.format("acc: %.3f at %d", acceleration, quakeStartTime + msOffset));
             quakeQueue.add(new SenseData(acceleration, quakeStartTime + msOffset));
         }
     }

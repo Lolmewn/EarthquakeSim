@@ -1,6 +1,7 @@
 package nl.lolmewn.rug.quakesensor.net;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
@@ -27,8 +28,11 @@ public class ServerManager {
     }
 
     public boolean checkAvailability(String IP, int port) {
-        // TODO implement
-        return true;
+        try (Socket s = new Socket(IP, port)) {
+            return true;
+        } catch (IOException ignored) {
+            return false;
+        }
     }
 
     public List<Server> getServers() {

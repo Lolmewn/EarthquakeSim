@@ -13,7 +13,6 @@ import nl.lolmewn.rug.quakesensor.mq.Sensor;
 import nl.lolmewn.rug.quakesensor.net.ServerManager;
 import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
-import nl.lolmewn.rug.quakesensor.sim.SenseData;
 
 /**
  *
@@ -75,10 +74,6 @@ public class SensorMain {
                 System.out.println(" offline. (" + ex.getLocalizedMessage() + ")");
             }
         });
-    }
-
-    public void sense(SenseData senseData) {
-
     }
 
     private void notifySensorOnline() {

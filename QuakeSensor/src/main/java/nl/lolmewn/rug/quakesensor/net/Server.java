@@ -3,13 +3,14 @@ package nl.lolmewn.rug.quakesensor.net;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.Observable;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 
 /**
  *
  * @author Lolmewn
  */
-public class Server {
+public class Server extends Observable {
 
     private final ServerAddress address;
     private Socket socket;
@@ -26,6 +27,7 @@ public class Server {
         disconnect();
         this.socket = new Socket();
         this.socket.connect(new InetSocketAddress(address.getAddress(), address.getPort()));
+        this.notifyObservers(); // Notify connect
         return socket;
     }
 
@@ -39,6 +41,7 @@ public class Server {
         }
         System.out.println("Closing socket to " + address.toString());
         socket.close();
+        this.notifyObservers(); // Notify disconnect
     }
 
     public boolean isConnected() {
