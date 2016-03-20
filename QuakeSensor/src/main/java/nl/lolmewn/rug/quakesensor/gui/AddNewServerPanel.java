@@ -36,17 +36,17 @@ public abstract class AddNewServerPanel extends javax.swing.JFrame {
         this.ipField.setInputVerifier(new InputVerifier() {
             @Override
             public boolean verify(JComponent jc) {
-                Matcher matcher = IP_PATTERN.matcher(((JTextComponent)jc).getText());
+                Matcher matcher = IP_PATTERN.matcher(((JTextComponent) jc).getText());
                 return matcher.matches();
             }
         });
         this.portField.setInputVerifier(new InputVerifier() {
             @Override
             public boolean verify(JComponent jc) {
-                try{
-                    int port = Integer.parseInt(((JTextComponent)jc).getText());
+                try {
+                    int port = Integer.parseInt(((JTextComponent) jc).getText());
                     return port >= 0 && port < 65536;
-                }catch(NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
                     return false;
                 }
             }
@@ -145,13 +145,19 @@ public abstract class AddNewServerPanel extends javax.swing.JFrame {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Performed when the save button is clicked. Verifies the data (IP and
+     * port), then returns the filled in data to the class implementing save()
+     *
+     * @param evt ActionEvent, unused
+     */
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        if(!this.ipField.getInputVerifier().verify(ipField)){
+        if (!this.ipField.getInputVerifier().verify(ipField)) {
             this.ipField.requestFocus();
             this.ipField.setForeground(Color.RED);
             return;
         }
-        if(!this.portField.getInputVerifier().verify(portField)){
+        if (!this.portField.getInputVerifier().verify(portField)) {
             this.portField.requestFocus();
             this.portField.setForeground(Color.RED);
             return;
@@ -160,6 +166,12 @@ public abstract class AddNewServerPanel extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    /**
+     * Performed when the reset button is clicked. Resets all fields to their
+     * default values and focusses the IP field.
+     *
+     * @param evt ActionEvent, unused
+     */
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         this.ipField.setText(DEFAULT_IP);
         this.portField.setText(DEFAULT_PORT + "");
@@ -168,6 +180,12 @@ public abstract class AddNewServerPanel extends javax.swing.JFrame {
         this.ipField.requestFocus();
     }//GEN-LAST:event_resetButtonActionPerformed
 
+    /**
+     * Performed when the cancel button is clicked. Closes the window without
+     * saving the form.
+     *
+     * @param evt ActionEvent, unused
+     */
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         this.dispose();
     }//GEN-LAST:event_cancelButtonActionPerformed
@@ -183,6 +201,11 @@ public abstract class AddNewServerPanel extends javax.swing.JFrame {
     private javax.swing.JButton saveButton;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Saves the newly defined server with the given data. 
+     * @param IP IP on which the new server resides
+     * @param port Port on which the new server runs
+     */
     public abstract void save(String IP, int port);
 
 }

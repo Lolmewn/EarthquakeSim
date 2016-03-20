@@ -189,6 +189,12 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
         getContentPane().add(Tabs, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * Performed when the Add server button is clicked. Opens a new window with
+     * a form the user has to fill in.
+     *
+     * @param evt ActionEvent, unused
+     */
     private void addNewServerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addNewServerButtonActionPerformed
         AddNewServerPanel panel = new AddNewServerPanel() {
             @Override
@@ -204,6 +210,12 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
         panel.setVisible(true);
     }//GEN-LAST:event_addNewServerButtonActionPerformed
 
+    /**
+     * Performed when the Remove server button is clicked. Removes the currently
+     * selected server. If no server is selected, nothing happens.
+     *
+     * @param evt ActionEvent, unused
+     */
     private void removeServerButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeServerButtonActionPerformed
         int row = this.serversTable.getSelectedRow();
         if (row == -1) {
@@ -231,6 +243,9 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
     private javax.swing.JLabel yAxis;
     // End of variables declaration//GEN-END:variables
 
+    /**
+     * Load all current servers to the UI
+     */
     private void loadServersToUI() {
         serverManager.getServers().stream().forEach((server) -> {
             addServerToUI(server.getAddress().getAddress(), server.getAddress().getPort(), server.isConnected() ? "Online" : "Offline");
@@ -238,16 +253,30 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
         });
     }
 
+    /**
+     * Add server to the UI
+     *
+     * @param IP IP address of the server
+     * @param port port on which the server runs
+     * @param status Status of the server, e.g. "Online", "Offline" or
+     * "Checking..."
+     */
     private void addServerToUI(String IP, int port, String status) {
         DefaultTableModel dtm = (DefaultTableModel) serversTable.getModel();
         dtm.addRow(new Object[]{IP, port, status});
     }
 
+    /**
+     * Schedules the Quake Graph Drawer Thread
+     */
     private void initQuakeDrawer() {
         Threader.runTask(this);
     }
 
     @Override
+    /**
+     * Run the Quake Graph Drawer Thread
+     */
     public void run() {
         while (true) {
             this.quakeGraphPanel.repaint();
@@ -260,13 +289,25 @@ public class MainGUI extends javax.swing.JFrame implements Runnable, Observer {
     }
 
     @Override
-    public void update(Observable o, Object o1) {
-        if (o instanceof Server) {
-            Server server = (Server) o;
+    /**
+     * Called when an Observable calls notifyObservers() Currently only used for
+     * Server (status) updates
+     */
+    public void update(Observable obs, Object unused) {
+        if (obs instanceof Server) {
+            Server server = (Server) obs;
             updateServer(server.getAddress().getAddress(), server.getAddress().getPort(), server.isConnected());
         }
     }
 
+    /**
+     * Finds and updates the server according to the IP and port, sets the
+     * Status field.
+     *
+     * @param IP IP on which the server runs
+     * @param port port on which the server runs
+     * @param online true if the server is online, false otherwise
+     */
     public void updateServer(String IP, int port, boolean online) {
         EventQueue.invokeLater(() -> {
             // Find idx for row

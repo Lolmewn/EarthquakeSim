@@ -15,6 +15,7 @@ import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 
 /**
+ * Main class of the Sensor.
  *
  * @author Lolmewn
  */
@@ -29,9 +30,11 @@ public class SensorMain {
     public SensorMain() {
         loadSettings();
         loadServerManager();
-        new ServerSyncer(this);
+        new ServerSyncer(this); // Sync known servers with online servers
+        // Simulate quakes; we don't have actual sensors nor the time to wait for an actual quake to happen.
         this.simulator = new QuakeSimulator();
         try {
+            // Start the sensor, using the Simulator as sensing equipment
             new Sensor(simulator);
         } catch (IOException | TimeoutException ex) {
             Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
@@ -49,6 +52,10 @@ public class SensorMain {
         return serverManager;
     }
 
+    /**
+     * Load the settings of the application. Settings include, but are not
+     * limited to: latitude and longitude, UUID, server location
+     */
     private void loadSettings() {
         try {
             this.settings = new Settings("settings.properties");
@@ -63,6 +70,9 @@ public class SensorMain {
         }
     }
 
+    /**
+     * Load the server manager and his servers.
+     */
     private void loadServerManager() {
         this.serverManager = new ServerManager(settings);
         this.settings.getServers().stream().forEach(address -> {
@@ -76,6 +86,10 @@ public class SensorMain {
         });
     }
 
+    /**
+     * Notify to all online servers that we're online and ready to send some
+     * quake data.
+     */
     private void notifySensorOnline() {
         getServerManager().getServers().stream().filter((server) -> (server.isConnected())).forEach((server) -> {
             try {
@@ -86,6 +100,9 @@ public class SensorMain {
         });
     }
 
+    /**
+     * Notify all online servers that we're shutting down.
+     */
     public void notifySensorOffline() {
         getServerManager().getServers().stream().filter((server) -> (server.isConnected())).forEach((server) -> {
             try {
