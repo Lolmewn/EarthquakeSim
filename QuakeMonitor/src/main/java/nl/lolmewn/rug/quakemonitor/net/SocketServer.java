@@ -16,6 +16,9 @@ import nl.lolmewn.rug.quakecommon.net.packet.DataPacket;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
 
 /**
+ * SocketServer class handles all incoming Socket connections on a given port.
+ * It then handles these connections in a separate thread as to allow multiple
+ * connections at once.
  *
  * @author Lolmewn
  */
@@ -30,6 +33,13 @@ public class SocketServer implements Runnable {
         this.settings = settings;
     }
 
+    /**
+     * Starts the Server. If server is already starting, this method acts as a
+     * restart, calling stop() before continuing.
+     *
+     * @throws IOException Thrown when Server could not be started (e.g. port is
+     * taken)
+     */
     public void start() throws IOException {
         if (serverSocket != null && !serverSocket.isClosed()) {
             System.out.println("Detected open server; closing before restarting...");
@@ -40,7 +50,15 @@ public class SocketServer implements Runnable {
         Threader.runTask(this);
     }
 
-    public void stop() {
+    /**
+     * Stops the ServerSocket if it is not null and not closed.
+     *
+     * @throws IOException See {@link ServerSocket#close() }
+     */
+    public void stop() throws IOException {
+        if (serverSocket != null && !serverSocket.isClosed()) {
+            serverSocket.close();
+        }
     }
 
     @Override

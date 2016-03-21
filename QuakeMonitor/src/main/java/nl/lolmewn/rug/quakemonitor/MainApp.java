@@ -8,8 +8,12 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
-    
+
     @Override
+    /**
+     * Start of the application. JavaFX calls this when the application is
+     * launched and supplies the Stage variable to us.
+     */
     public void start(Stage stage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/Scene.fxml"));
 
@@ -19,10 +23,10 @@ public class MainApp extends Application {
         stage.setTitle("Earthquake monitor");
         stage.setScene(scene);
         stage.show();
-        stage.setOnCloseRequest((e)->{
+        stage.setOnCloseRequest((e) -> {
             System.exit(0);
         });
-        
+
         System.out.println("GUI launched, launching server...");
     }
 
