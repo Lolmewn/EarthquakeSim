@@ -18,6 +18,9 @@ public class QuakeGraph extends JPanel {
     private static final CircularFifoQueue<SenseData> QUEUE = new CircularFifoQueue(1080 / QuakeGraph.PIXELS_PER_TICK); // 1080 pixels worth of data should be enough
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     protected void paintComponent(Graphics grphcs) {
         super.paintComponent(grphcs);
         int startX = this.getWidth() - QUEUE.size() * PIXELS_PER_TICK; // old entries will be drawn outside of the screen, and that's okay
@@ -36,6 +39,12 @@ public class QuakeGraph extends JPanel {
         }
     }
 
+    /**
+     * Appends a datapoint to the graph. The datapoint will be drawn the next
+     * time paintComponent is called.
+     *
+     * @param data Data to draw
+     */
     public static void addDatapoint(SenseData data) {
         synchronized (QUEUE) {
             QUEUE.add(data);

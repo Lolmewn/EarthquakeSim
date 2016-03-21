@@ -13,8 +13,9 @@ import javax.swing.JLabel;
 import javax.swing.plaf.basic.BasicLabelUI;
 
 /**
- * Class to have vertical text in a JLabel
- * Source: http://tech.chitgoks.com/2009/11/13/rotate-jlabel-vertically/
+ * Class to have vertical text in a JLabel Source:
+ * http://tech.chitgoks.com/2009/11/13/rotate-jlabel-vertically/
+ *
  * @author Unknown
  */
 public class VerticalLabelUI extends BasicLabelUI {
@@ -31,6 +32,9 @@ public class VerticalLabelUI extends BasicLabelUI {
     }
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public Dimension getPreferredSize(JComponent c) {
         Dimension dim = super.getPreferredSize(c);
         return new Dimension(dim.height, dim.width);
@@ -42,6 +46,9 @@ public class VerticalLabelUI extends BasicLabelUI {
     private static Insets paintViewInsets = new Insets(0, 0, 0, 0);
 
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void paint(Graphics g, JComponent c) {
         JLabel label = (JLabel) c;
         String text = label.getText();
@@ -57,7 +64,7 @@ public class VerticalLabelUI extends BasicLabelUI {
         PAINT_VIEW_R.x = paintViewInsets.left;
         PAINT_VIEW_R.y = paintViewInsets.top;
 
-        // Use inverted height &amp; width
+        // Use inverted height & width
         PAINT_VIEW_R.height = c.getWidth() - (paintViewInsets.left + paintViewInsets.right);
         PAINT_VIEW_R.width = c.getHeight() - (paintViewInsets.top + paintViewInsets.bottom);
 

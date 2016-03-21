@@ -18,6 +18,9 @@ import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataPacket;
 import nl.lolmewn.rug.quakesensor.SensorMain;
 
 /**
+ * Class which synchronizes the known servers with all active servers. This is
+ * done to keep the list of known servers updated throughout time without having
+ * to manually add a new server to all sensors.
  *
  * @author Lolmewn
  */
@@ -25,13 +28,20 @@ public class ServerSyncer implements Runnable {
 
     private final SensorMain sensor;
 
+    /**
+     * Instantiates the Syncer and starts its task.
+     *
+     * @param sensor Main class, used for the Settings and ServerManager.
+     */
     public ServerSyncer(SensorMain sensor) {
         this.sensor = sensor;
-        System.out.println("Syncing known servers with other servers...");
         Threader.runTask(this);
     }
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     public void run() {
         while (true) {
             // Let's look for a free server
@@ -65,6 +75,16 @@ public class ServerSyncer implements Runnable {
         }
     }
 
+    /**
+     * Combines the set of known ServerAddresses with the retrieved Set of
+     * ServerAddresses. This performs the union of the two sets.
+     *
+     * @see Set#addAll(java.util.Collection)
+     *
+     * @param own Own Set of Addresses
+     * @param other Other Set of Addresses
+     * @return Union of the two given sets
+     */
     public Set<ServerAddress> combine(Set<ServerAddress> own, Set<ServerAddress> other) {
         own.addAll(other);
         return own;

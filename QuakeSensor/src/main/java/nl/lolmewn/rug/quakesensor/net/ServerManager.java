@@ -12,6 +12,7 @@ import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 import nl.lolmewn.rug.quakesensor.SensorMain;
 
 /**
+ * Manager of known servers.
  *
  * @author Lolmewn
  */
@@ -37,6 +38,15 @@ public class ServerManager {
         server.connect();
     }
 
+    /**
+     * Checks if there is a server active at the given IP and port. Does not
+     * check if it is a QuakeMonitor Server.
+     *
+     * @param IP Address to connect to
+     * @param port Port to connect to
+     * @return true if there is a server, false otherwise (in case of an
+     * IOException)
+     */
     public boolean checkAvailability(String IP, int port) {
         try (Socket s = new Socket(IP, port)) {
             return true;
@@ -45,10 +55,25 @@ public class ServerManager {
         }
     }
 
+    /**
+     * Get all servers managed by this class. May contain connected and
+     * disconnected servers.
+     *
+     * @return List of all servers
+     */
     public List<Server> getServers() {
         return servers;
     }
 
+    /**
+     * Tries to find an active server. If a connected server is found, it uses
+     * that Server. Otherwise, it tries to set up a new connection to servers.
+     *
+     * @see Server#isConnected()
+     *
+     * @return Returns the first active server it can find, or null if none can
+     * be found.
+     */
     public Server getActiveServer() {
         for (Server server : this.getServers()) {
             if (server.isConnected()) {
@@ -72,6 +97,14 @@ public class ServerManager {
         return null; // no connected servers
     }
 
+    /**
+     * Saves new server data to the settings file. Does not try to connect to
+     * the server. If a server is found with the same IP and port, nothing
+     * happens.
+     *
+     * @param IP Address of the server
+     * @param port Port of the server
+     */
     public void saveNewServer(String IP, int port) {
         Set<ServerAddress> addresses = settings.getServers();
         int size = addresses.size();
@@ -85,6 +118,13 @@ public class ServerManager {
         }
     }
 
+    /**
+     * Removes a Server from the settings file. Does not disconnect the server.
+     * If no server with the given IP and port are found, nothing happens.
+     *
+     * @param IP Address of the server
+     * @param port Port of the server
+     */
     public void deleteServer(String IP, int port) {
         String allServers = settings.getProperty("servers");
         String oneRemoved = allServers.replace(IP + ":" + port, "");
