@@ -3,6 +3,7 @@ package nl.lolmewn.rug.quakecommon.net;
 import java.util.Objects;
 
 /**
+ * Class holding the address and port of a Server.
  *
  * @author Lolmewn
  */
@@ -25,11 +26,17 @@ public class ServerAddress {
     }
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     public String toString() {
         return "ServerAddress{address=" + address + ":" + port + '}';
     }
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     public int hashCode() {
         int hash = 7;
         hash = 79 * hash + Objects.hashCode(this.address);
@@ -38,6 +45,9 @@ public class ServerAddress {
     }
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;

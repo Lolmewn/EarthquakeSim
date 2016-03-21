@@ -5,27 +5,42 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
+ * Threading utility class
  *
  * @author Lolmewn
  */
 public class Threader {
-    
+
     private final static ExecutorService EXECUTOR;
-    
-    static{
+
+    static {
         EXECUTOR = Executors.newCachedThreadPool();
     }
 
     private Threader() {
         // Don't allow instances of this class other than the static one
     }
-    
-    public static void runTask(Runnable runnable){
+
+    /**
+     * Run a task in a separate thread as soon as possible
+     *
+     * @param runnable Task to run
+     */
+    public static void runTask(Runnable runnable) {
         EXECUTOR.submit(runnable);
     }
 
-    public static <T> Future<T> submit(Runnable r, T t) {
-        return EXECUTOR.submit(r, t);
+    /**
+     * Run a task in a separate thread as soon as possible, yielding a Result in
+     * the future
+     *
+     * @param <T> Result type of the task
+     * @param runnable Task to run
+     * @param type Type of object to return
+     * @return Future object which will be filled at the completion of the Task.
+     */
+    public static <T> Future<T> submit(Runnable runnable, T type) {
+        return EXECUTOR.submit(runnable, type);
     }
 
 }

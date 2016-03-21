@@ -5,6 +5,7 @@ import nl.lolmewn.rug.quakecommon.net.PacketType;
 import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 
 /**
+ * DataPacket holding known ServerAddresses
  *
  * @author Lolmewn
  */
@@ -17,6 +18,9 @@ public class ResponseServersPacket implements DataPacket {
     }
 
     @Override
+    /**
+     * {@inheritDoc }
+     */
     public PacketType getPacketType() {
         return PacketType.RESPONSE_SERVERS;
     }

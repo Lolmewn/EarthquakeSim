@@ -9,6 +9,12 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import java.lang.reflect.Type;
 
+/**
+ * Helper class for GSON, allows interfaces to be serialized and deserialized.
+ *
+ * @author http://stackoverflow.com/a/9550086
+ * @param <T> Type of the Interface (e.g. DataPacket)
+ */
 final class InterfaceAdapter<T> implements JsonSerializer<T>, JsonDeserializer<T> {
 
     @Override
