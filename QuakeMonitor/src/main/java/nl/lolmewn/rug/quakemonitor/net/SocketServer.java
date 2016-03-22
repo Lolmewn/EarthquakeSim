@@ -6,14 +6,18 @@ import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakecommon.net.PacketType;
+import nl.lolmewn.rug.quakecommon.net.ServerAddress;
 import nl.lolmewn.rug.quakecommon.net.packet.DataPacket;
 import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
+import nl.lolmewn.rug.quakecommon.net.packet.SensorOnlinePacket;
+import nl.lolmewn.rug.quakemonitor.FXMLController;
 
 /**
  * SocketServer class handles all incoming Socket connections on a given port.
@@ -24,13 +28,15 @@ import nl.lolmewn.rug.quakecommon.net.packet.ResponseServersPacket;
  */
 public class SocketServer implements Runnable {
 
+    private final FXMLController controller;
     private final int port;
     private final Settings settings;
     private ServerSocket serverSocket;
 
-    public SocketServer(int port, Settings settings) {
-        this.port = port;
-        this.settings = settings;
+    public SocketServer(FXMLController controller) {
+        this.controller = controller;
+        this.settings = controller.getSettings();
+        this.port = settings.getInteger("server-port");
     }
 
     /**
@@ -81,7 +87,7 @@ public class SocketServer implements Runnable {
         try {
             while (incoming.isConnected() && !incoming.isClosed()) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(incoming.getInputStream()));
-                DataPacket packet = (DataPacket) GsonHelper.receive(in);
+                DataPacket packet = GsonHelper.receive(in);
                 if (packet.getPacketType() == PacketType.SENSOR_OFFLINE) {
                     incoming.close();
                     return;
@@ -99,15 +105,25 @@ public class SocketServer implements Runnable {
     }
 
     private void handlePacket(DataPacket packet, Socket socket) throws IOException {
-        System.out.println("Received packet type " + packet.getPacketType());
+        System.out.println("Handling packet " + packet.getPacketType());
         switch (packet.getPacketType()) {
             case REQUEST_SERVERS:
-                GsonHelper.send(socket, new ResponseServersPacket(this.settings.getServers()));
+                Set<ServerAddress> addresses = this.settings.getServers();
+                GsonHelper.send(socket, new ResponseServersPacket(addresses));
                 return;
             case RESPONSE_SERVERS:
-            // Handle from other servers
+                System.err.println("Got " + packet.getPacketType() + "; this should not have arrived here.");
+                return;
+            case SENSOR_ONLINE:
+                SensorOnlinePacket sop = (SensorOnlinePacket) packet;
+                SensorInfo info = new SensorInfo(sop.getUuid(), sop.getLongitude(), sop.getLatitude());
+                //MapMarkers markers = new MapMarkers(info);
+                //controller.getMarkers().put(info, new MapMarkers(info));
+                //controller.activate(markers);
+                controller.addSensor(info);
+                return;
             default:
-                System.out.println("Received " + packet.getPacketType());
+                System.out.println("DEFAULT: " + packet.getPacketType());
         }
     }
 

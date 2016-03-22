@@ -25,9 +25,22 @@
                   </AnchorPane>
             </content>
           </Tab>
-          <Tab text="Untitled Tab 2">
+          <Tab text="QuakeData">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="tableView" prefHeight="274.0" prefWidth="500.0">
+                          <columns>
+                            <TableColumn fx:id="uuidColumn" prefWidth="159.0" text="Sensor" />
+                            <TableColumn prefWidth="228.0" text="Location">
+                                 <columns>
+                                    <TableColumn fx:id="latitudeColumn" prefWidth="110.0" text="Latitude" />
+                                    <TableColumn fx:id="longitudeColumn" prefWidth="118.0" text="Longitude" />
+                                 </columns></TableColumn>
+                              <TableColumn fx:id="acccelerationColumn" minWidth="6.0" prefWidth="112.0" text="Acceleration" />
+                          </columns>
+                        </TableView>
+                     </children></AnchorPane>
             </content>
           </Tab>
         </tabs>
