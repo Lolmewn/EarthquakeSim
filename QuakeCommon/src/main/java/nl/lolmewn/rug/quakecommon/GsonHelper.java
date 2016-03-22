@@ -77,10 +77,15 @@ public class GsonHelper {
 
     /**
      * Turns any object into a GSON String
+     *
      * @param data Object to stringify
      * @return Stringified object
      */
     public static String gsonify(Object data) {
         return GSON.toJson(data);
+    }
+
+    public static <T> T ungsonify(String message, Class<? extends T> aClass) {
+        return GSON.fromJson(message, aClass);
     }
 }

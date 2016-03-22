@@ -134,6 +134,24 @@ public class Settings {
         return properties.getProperty(key);
     }
 
+    public int getInteger(String key) {
+        try {
+            return Integer.parseInt(getProperty(key));
+        } catch (NumberFormatException ex) {
+            System.err.println("Misconfiguration: " + key + " is not set as a number while it was expected to be one");
+            throw new IllegalStateException(ex);
+        }
+    }
+
+    public double getDouble(String key) {
+        try {
+            return Double.parseDouble(getProperty(key));
+        } catch (NumberFormatException ex) {
+            System.err.println("Misconfiguration: " + key + " is not set as a number while it was expected to be one");
+            throw new IllegalStateException(ex);
+        }
+    }
+
     /**
      * Saves all currently known key-value pairs to disk
      *
