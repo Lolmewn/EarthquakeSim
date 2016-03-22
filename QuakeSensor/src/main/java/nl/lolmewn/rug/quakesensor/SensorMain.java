@@ -8,10 +8,11 @@ import java.util.logging.Logger;
 import nl.lolmewn.rug.quakecommon.GsonHelper;
 import nl.lolmewn.rug.quakecommon.Settings;
 import nl.lolmewn.rug.quakecommon.net.PacketType;
+import nl.lolmewn.rug.quakecommon.net.ServerManager;
+import nl.lolmewn.rug.quakecommon.net.ServerSyncer;
+import nl.lolmewn.rug.quakecommon.net.packet.SensorOnlinePacket;
 import nl.lolmewn.rug.quakecommon.net.packet.SimpleDataPacket;
 import nl.lolmewn.rug.quakesensor.mq.Sensor;
-import nl.lolmewn.rug.quakesensor.net.ServerManager;
-import nl.lolmewn.rug.quakesensor.net.ServerSyncer;
 import nl.lolmewn.rug.quakesensor.sim.QuakeSimulator;
 
 /**
@@ -30,12 +31,12 @@ public class SensorMain {
     public SensorMain() {
         loadSettings();
         loadServerManager();
-        new ServerSyncer(this); // Sync known servers with online servers
+        new ServerSyncer(settings, serverManager); // Sync known servers with online servers
         // Simulate quakes; we don't have actual sensors nor the time to wait for an actual quake to happen.
         this.simulator = new QuakeSimulator();
         try {
             // Start the sensor, using the Simulator as sensing equipment
-            new Sensor(simulator);
+            new Sensor(simulator, settings);
         } catch (IOException | TimeoutException ex) {
             Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
             System.err.println("Could not start sensor; shutting down.");
@@ -93,7 +94,14 @@ public class SensorMain {
     private void notifySensorOnline() {
         getServerManager().getServers().stream().filter((server) -> (server.isConnected())).forEach((server) -> {
             try {
-                GsonHelper.send(server.getSocket(), new SimpleDataPacket(PacketType.SENSOR_ONLINE));
+                GsonHelper.send(server.getSocket(),
+                        new SensorOnlinePacket(
+                                settings.getDouble("latitude"),
+                                settings.getDouble("longitude"),
+                                UUID.fromString(settings.getProperty("uuid")
+                                )
+                        )
+                );
             } catch (IOException ex) {
                 Logger.getLogger(SensorMain.class.getName()).log(Level.SEVERE, null, ex);
             }

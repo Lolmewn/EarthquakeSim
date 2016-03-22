@@ -1,5 +1,6 @@
 package nl.lolmewn.rug.quakesensor.sim;
 
+import nl.lolmewn.rug.quakecommon.mq.SenseData;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ThreadLocalRandom;

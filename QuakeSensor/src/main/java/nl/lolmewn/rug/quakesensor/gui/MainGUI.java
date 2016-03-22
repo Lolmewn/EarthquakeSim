@@ -9,8 +9,8 @@ import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
 import nl.lolmewn.rug.quakecommon.Threader;
 import nl.lolmewn.rug.quakesensor.SensorMain;
-import nl.lolmewn.rug.quakesensor.net.Server;
-import nl.lolmewn.rug.quakesensor.net.ServerManager;
+import nl.lolmewn.rug.quakecommon.net.Server;
+import nl.lolmewn.rug.quakecommon.net.ServerManager;
 
 /**
  *

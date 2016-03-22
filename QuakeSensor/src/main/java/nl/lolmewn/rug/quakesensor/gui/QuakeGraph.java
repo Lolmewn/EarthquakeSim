@@ -2,7 +2,7 @@ package nl.lolmewn.rug.quakesensor.gui;
 
 import java.awt.Graphics;
 import javax.swing.JPanel;
-import nl.lolmewn.rug.quakesensor.sim.SenseData;
+import nl.lolmewn.rug.quakecommon.mq.SenseData;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 /**
